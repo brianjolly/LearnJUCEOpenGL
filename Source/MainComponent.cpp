@@ -48,19 +48,19 @@ void MainComponent::newOpenGLContextCreated()
     
     // Load the (x, y) positions (which are just the corners of the screen), into a static area of GPU memory.
     GL::glGenBuffers(1, &vertex_buff_ID);
-    GL::glBindBuffer(GL_ARRAY_BUFFER, vertex_buff_ID);
-    GL::glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * positions_count, positions, GL_STATIC_DRAW);
+    GL::glBindBuffer(juce::gl::GL_ARRAY_BUFFER, vertex_buff_ID);
+    GL::glBufferData(juce::gl::GL_ARRAY_BUFFER, sizeof(GLfloat) * positions_count, positions, juce::gl::GL_STATIC_DRAW);
     
     // Specify the attribute layout of the currently bound vertex buffer object (there's only one attribute - position).
     // The currently instantiated vertex array object will use this specification for each draw call.
     GL::glEnableVertexAttribArray(pos_attrib_id);
-    GL::glVertexAttribPointer(pos_attrib_id, num_floats_per_pos_attrib, GL_FLOAT, GL_FALSE,
+    GL::glVertexAttribPointer(pos_attrib_id, num_floats_per_pos_attrib, juce::gl::GL_FLOAT, juce::gl::GL_FALSE,
                               sizeof(GLfloat) * num_floats_per_pos_attrib, (const void*)0);     // For more that one attrib, can use a struct with a C++ macro to determine this void* offset.
 
     // Specify which (x, y) positions are used to draw two triangles in the shape of a rectangle (the screen) using the positions in the currently bound vertex buffer object.
     GL::glGenBuffers(1, &index_buff_ID);
-    GL::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buff_ID);
-    GL::glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * elements_count, elements, GL_STATIC_DRAW);
+    GL::glBindBuffer(juce::gl::GL_ELEMENT_ARRAY_BUFFER, index_buff_ID);
+    GL::glBufferData(juce::gl::GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * elements_count, elements, juce::gl::GL_STATIC_DRAW);
     
     // No need to unbind the array, buffer, or shader program thanks to JUCE.
 }
@@ -75,8 +75,8 @@ void MainComponent::renderOpenGL()
     GL::glBindVertexArray(vertex_arr_ID);
     
     // The element (or index) buffer is still required to be bound at each draw call to specify how to use the positions in the buffer to draw the correct shape.
-    GL::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buff_ID);
-    glDrawElements(GL_TRIANGLES, elements_count, GL_UNSIGNED_INT, nullptr);
+    GL::glBindBuffer(juce::gl::GL_ELEMENT_ARRAY_BUFFER, index_buff_ID);
+    juce::gl::glDrawElements(juce::gl::GL_TRIANGLES, elements_count, juce::gl::GL_UNSIGNED_INT, nullptr);
     
     // Benchmark the software renderer against the OpenGL renderer
     time_frames();
@@ -134,7 +134,7 @@ GLuint MainComponent::create_shader(const GLenum type, const GLchar* source, con
     
     // Check shader compilation success
     GLint success;
-    GL::glGetShaderiv(shID, GL_COMPILE_STATUS, &success);
+    GL::glGetShaderiv(shID, juce::gl::GL_COMPILE_STATUS, &success);
     if (!success) {
         char infoLog[512];
         GL::glGetShaderInfoLog(shID, 512, nullptr, infoLog);
@@ -145,9 +145,9 @@ GLuint MainComponent::create_shader(const GLenum type, const GLchar* source, con
 }
 GLuint MainComponent::create_program(const ShaderProgramSource& source)
 {
-    const auto vxID = create_shader(GL_VERTEX_SHADER, source.VertexSource.getCharPointer(),
+    const auto vxID = create_shader(juce::gl::GL_VERTEX_SHADER, source.VertexSource.getCharPointer(),
                                     sizeof(GLchar) * source.VertexSource.length());
-    const auto fsID = create_shader(GL_FRAGMENT_SHADER, source.FragmentSource.getCharPointer(),
+    const auto fsID = create_shader(juce::gl::GL_FRAGMENT_SHADER, source.FragmentSource.getCharPointer(),
                                     sizeof(GLchar) * source.FragmentSource.length());
     const auto spID = GL::glCreateProgram();
     GL::glAttachShader(spID, vxID);
@@ -156,7 +156,7 @@ GLuint MainComponent::create_program(const ShaderProgramSource& source)
     
     // Check program linking success
     GLint success;
-    GL::glGetProgramiv(spID, GL_LINK_STATUS, &success);
+    GL::glGetProgramiv(spID, juce::gl::GL_LINK_STATUS, &success);
     if (!success) {
         char infoLog[512];
         GL::glGetProgramInfoLog(spID, 512, nullptr, infoLog);
