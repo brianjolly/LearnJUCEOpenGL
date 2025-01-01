@@ -7,6 +7,7 @@
 */
 
 #include "MainComponent.h"
+#include "BinaryData.h"
 //==============================================================================
 MainComponent::MainComponent()
 {
@@ -111,20 +112,7 @@ void MainComponent::timerCallback()
 }
 MainComponent::ShaderProgramSource MainComponent::parse_shaders()
 {
-    auto shader_folder = File::getCurrentWorkingDirectory();
-    while (!shader_folder.isRoot()) {
-        if (shader_folder.getFileName() == JUCEApplication::getInstance()->getApplicationName()) {
-            shader_folder = shader_folder.getChildFile("Source/Shaders/");
-            break;
-        }
-        shader_folder = shader_folder.getParentDirectory();
-    }
-    if (! shader_folder.exists()) {
-        jassertfalse;
-    }
-    const auto vertex_file = shader_folder.getChildFile("Vert.vert");
-    const auto fragment_file = shader_folder.getChildFile("Frag.frag");
-    return { vertex_file.loadFileAsString(), fragment_file.loadFileAsString() };
+    return { BinaryData::Vert_vert, BinaryData::Frag_frag };
 }
 GLuint MainComponent::create_shader(const GLenum type, const GLchar* source, const GLint source_length)
 {
